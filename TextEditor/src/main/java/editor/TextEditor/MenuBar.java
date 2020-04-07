@@ -20,15 +20,16 @@ public class MenuBar extends JMenuBar implements ActionListener, Observer {
 	private FindReplace findReplace;
 	private JMenu fileMenu = null;
 	private JMenu editMenu = null;
-	
-	public MenuBar() {
+
+	public MenuBar(UserInterface ui) {
 		this.fileManager = new FileManager();
 		this.fileManager.addObserver(this);
+		this.fileManager.addObserver(ui);
 		this.findReplace = new FindReplace();
 		createMenu();
 		setVisible(true);
 	}
-	
+
 	private void createMenu() {
 		fileMenu = new JMenu("File");
 		editMenu = new JMenu("Edit");
@@ -36,14 +37,14 @@ public class MenuBar extends JMenuBar implements ActionListener, Observer {
 		this.add(fileMenu);
 		this.add(editMenu);
 	}
-	
+
 	public FindReplace getFindReplace() {
 		return findReplace;
 	}
 
 	private void createMenuItems() {
-		String[] fileMenuOptions = {"New", "Open", "Save"};
-		String[] editMenuOptions = {"Cut", "Copy", "Paste", "Find", "FindAll", "Replace", "ReplaceAll"};
+		String[] fileMenuOptions = { "New", "Open", "Save" };
+		String[] editMenuOptions = { "Cut", "Copy", "Paste", "Find", "FindAll", "Replace", "ReplaceAll" };
 		for (String option : fileMenuOptions) {
 			fileMenu.add(createMenuItem(option));
 		}
@@ -51,7 +52,7 @@ public class MenuBar extends JMenuBar implements ActionListener, Observer {
 			editMenu.add(createMenuItem(option));
 		}
 	}
-	
+
 	private JMenuItem createMenuItem(String option) {
 		JMenuItem newMenuItem = new JMenuItem(option);
 		newMenuItem.addActionListener(this);
@@ -68,7 +69,7 @@ public class MenuBar extends JMenuBar implements ActionListener, Observer {
 			break;
 		case "Save":
 			String chooseFile = chooseFile();
-			if (chooseFile!=null && !chooseFile.equals("")) {
+			if (chooseFile != null && !chooseFile.equals("")) {
 				fileManager.saveAsFile(chooseFile);
 			}
 			break;
@@ -102,19 +103,20 @@ public class MenuBar extends JMenuBar implements ActionListener, Observer {
 			String replaceAllNewString = getUserInput("Enter new characters to be replaced with: ");
 			findReplace.replaceAll(replaceAllString, replaceAllNewString);
 			break;
-			
+
 		}
 	}
-	
+
 	private String getUserInput(String message) {
-		 String userText = JOptionPane.showInputDialog(message);
-		 return userText == null ? "" : userText;
+		String userText = JOptionPane.showInputDialog(message);
+		return userText == null ? "" : userText;
 	}
-	
+
 	private void createNewEditorWorkspace() {
 		String text = Model.getInstance().getText();
-		if (text == null || text.equals("")) {} else {
-			int showConfirmDialog = JOptionPane.showConfirmDialog(null, 
+		if (text == null || text.equals("")) {
+		} else {
+			int showConfirmDialog = JOptionPane.showConfirmDialog(null,
 					"Are you sure to clear current workspace? Any unsaved changes will be discarded");
 			if (showConfirmDialog == 0) {
 				Model.getInstance().setText("");
@@ -130,13 +132,15 @@ public class MenuBar extends JMenuBar implements ActionListener, Observer {
 		}
 		return "";
 	}
-	
+
 	private void displayMessage(String message) {
 		JOptionPane.showMessageDialog(null, message);
 	}
 
 	public void update(Observable o, Object arg) {
-		displayMessage(Model.getInstance().getDisplayMessage());
+		if (arg == "display") {
+			displayMessage(Model.getInstance().getDisplayMessage());
+		}
 	}
-	
+
 }

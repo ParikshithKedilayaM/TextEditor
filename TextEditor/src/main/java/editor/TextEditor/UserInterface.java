@@ -1,12 +1,15 @@
 package editor.TextEditor;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -25,10 +28,10 @@ import javax.swing.event.ChangeListener;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Highlighter.HighlightPainter;
 
-public class UserInterface extends JFrame {
+public class UserInterface extends JFrame implements Observer {
 
 	private static final long serialVersionUID = 1L;
-	private JTabbedPane tabbedpane = null;
+	private JTabbedPane tabbedPane = null;
 	private MenuBar menubar = null;
 	private ArrayList<JTextArea> textAreaList;
 
@@ -43,13 +46,13 @@ public class UserInterface extends JFrame {
 
 	private void createComponents() {
 		textAreaList = new ArrayList<JTextArea>();
-		menubar = new MenuBar();
-		tabbedpane = new JTabbedPane();
+		menubar = new MenuBar(this);
+		tabbedPane = new JTabbedPane();
 		setJMenuBar(menubar);
-		add(tabbedpane);
+		add(tabbedPane);
 		addTextArea();
 		addNewTabButton();
-		tabbedpane.addMouseListener(new MouseAdapter() {
+		tabbedPane.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() == 2) {
 					addTextArea();
@@ -57,11 +60,11 @@ public class UserInterface extends JFrame {
 			}
 
 		});
-		tabbedpane.addChangeListener(new ChangeListener() {
+		tabbedPane.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
 				try {
-					Model.getInstance().setCurrentTabName(tabbedpane.getName());
-					Model.getInstance().setTextArea(textAreaList.get(tabbedpane.getSelectedIndex()));
+					Model.getInstance().setCurrentTabName(tabbedPane.getName());
+					Model.getInstance().setTextArea(textAreaList.get(tabbedPane.getSelectedIndex()));
 					Model.getInstance().getTextArea().requestFocusInWindow();
 				} catch (Exception e1) {
 					addTextArea();
@@ -94,19 +97,19 @@ public class UserInterface extends JFrame {
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 		scrollPane.setBorder(new TitledBorder(new EtchedBorder(), "Start writing your text here!"));
 
-		Model.getInstance().setLatestTab(Math.max(Model.getInstance().getLatestTab() + 1, tabbedpane.getTabCount()));
+		Model.getInstance().setLatestTab(Math.max(Model.getInstance().getLatestTab() + 1, tabbedPane.getTabCount()));
 
-		if (tabbedpane.getTabCount() == 0) {
+		if (tabbedPane.getTabCount() == 0) {
 			Model.getInstance().setLatestTab(1);
 		}
 
 		String currentTabName = "New " + (Model.getInstance().getLatestTab());
 
 		Model.getInstance().setCurrentTabName(currentTabName);
-		tabbedpane.add(currentTabName, scrollPane);
-		tabbedpane.setSelectedIndex(tabbedpane.getTabCount() - 1);
-		tabbedpane.setTabComponentAt(tabbedpane.indexOfComponent(scrollPane),
-				getTitlePanel(tabbedpane, scrollPane, currentTabName));
+		tabbedPane.add(currentTabName, scrollPane);
+		tabbedPane.setSelectedIndex(tabbedPane.getTabCount() - 1);
+		tabbedPane.setTabComponentAt(tabbedPane.indexOfComponent(scrollPane),
+				getTitlePanel(tabbedPane, scrollPane, currentTabName));
 	}
 
 	private void addNewTabButton() {
@@ -147,6 +150,16 @@ public class UserInterface extends JFrame {
 
 	public static void main(String[] args) {
 		new UserInterface();
+	}
+
+	@Override
+	public void update(Observable o, Object arg) {
+		if (arg == "setTabName") {
+			String currentTabName = Model.getInstance().getCurrentTabName();
+			Component selectedComponent = tabbedPane.getSelectedComponent();
+			tabbedPane.setTabComponentAt(tabbedPane.indexOfComponent(selectedComponent),
+					getTitlePanel(tabbedPane, (JScrollPane) selectedComponent, currentTabName));
+		}
 	}
 
 }

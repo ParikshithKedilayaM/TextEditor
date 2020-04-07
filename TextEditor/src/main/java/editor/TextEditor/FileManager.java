@@ -5,10 +5,7 @@ import java.io.PrintWriter;
 import java.util.Observable;
 import java.util.Scanner;
 
-/*
 
-
-*/
 public class FileManager extends Observable {
 	public void loadFile(String filePath) {
 		Scanner scanner = null;
@@ -20,8 +17,12 @@ public class FileManager extends Observable {
 				text += scanner.nextLine();
 				text += '\n';
 			}
-			Model.getInstance().setText(text);
+			
 			Model.getInstance().setFileName(filePath);
+			Model.getInstance().setCurrentTabName(file.getName());
+			setChanged();
+			notifyObservers("setTabName");
+			Model.getInstance().setText(text);
 		} catch (Exception i) {
 			i.printStackTrace();
 		} finally {
@@ -67,6 +68,6 @@ public class FileManager extends Observable {
 	private void setMessage(String message) {
 		Model.getInstance().setDisplayMessage(message);
 		setChanged();
-		notifyObservers();
+		notifyObservers("display");
 	}
 }
