@@ -10,17 +10,21 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.text.DefaultHighlighter;
+import javax.swing.text.Highlighter.HighlightPainter;
 
 public class MenuBar extends JMenuBar implements ActionListener, Observer {
 
 	private static final long serialVersionUID = 1L;
 	private FileManager fileManager;
+	private FindReplace findReplace;
 	private JMenu fileMenu = null;
 	private JMenu editMenu = null;
 	
 	public MenuBar() {
 		this.fileManager = new FileManager();
 		this.fileManager.addObserver(this);
+		this.findReplace = new FindReplace();
 		createMenu();
 		setVisible(true);
 	}
@@ -41,6 +45,8 @@ public class MenuBar extends JMenuBar implements ActionListener, Observer {
         JMenuItem cutMenuItem = new JMenuItem("Cut"); 
         JMenuItem copyMenuItem = new JMenuItem("Copy"); 
         JMenuItem pasteMenuItem = new JMenuItem("Paste"); 
+        JMenuItem findOneMenuItem = new JMenuItem("Find"); 
+        JMenuItem findAllMenuItem = new JMenuItem("FindAll"); 
         
         newMenuItem.addActionListener(this);
         openMenuItem.addActionListener(this);
@@ -49,6 +55,8 @@ public class MenuBar extends JMenuBar implements ActionListener, Observer {
         cutMenuItem.addActionListener(this);
         copyMenuItem.addActionListener(this);
         pasteMenuItem.addActionListener(this);
+        findOneMenuItem.addActionListener(this);
+        findAllMenuItem.addActionListener(this);
         
         fileMenu.add(newMenuItem);
         fileMenu.add(openMenuItem);
@@ -57,10 +65,14 @@ public class MenuBar extends JMenuBar implements ActionListener, Observer {
         editMenu.add(cutMenuItem);
         editMenu.add(copyMenuItem);
         editMenu.add(pasteMenuItem);
+        editMenu.add(findOneMenuItem);
+        editMenu.add(findAllMenuItem);
 	}
 
 	public void actionPerformed(ActionEvent e) {
 		String eventPerformed = e.getActionCommand();
+		HighlightPainter painter = new DefaultHighlighter.DefaultHighlightPainter(
+				Model.getInstance().getTextArea().getSelectionColor());
 		if (eventPerformed.equals("Open")) {
 			fileManager.loadFile(chooseFile());
 		} else if (eventPerformed.equals("Save")) {
@@ -75,6 +87,12 @@ public class MenuBar extends JMenuBar implements ActionListener, Observer {
 			Model.getInstance().getTextArea().copy();
 		} else if (eventPerformed.equals("Paste")) {
 			Model.getInstance().getTextArea().paste();
+		} else if (eventPerformed.equals("Find")) {
+			String showInputDialog = JOptionPane.showInputDialog(null, "Enter text to search: ");
+			findReplace.searchOne(showInputDialog, painter);
+		} else if (eventPerformed.equals("FindAll")) {
+			String showInputDialog = JOptionPane.showInputDialog(null, "Enter text to search: ");
+			findReplace.searchAll(showInputDialog, painter);
 		}
 	}
 	
