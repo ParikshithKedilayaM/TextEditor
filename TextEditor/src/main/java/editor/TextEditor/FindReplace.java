@@ -26,4 +26,14 @@ public class FindReplace {
 			e.printStackTrace();
 		}
 	}
+
+	public void replaceText(String originalString, String newString) {
+		Model model = Model.getInstance();
+		model.setText(model.getText().replaceFirst(originalString, newString));
+	}
+
+	public void replaceAll(String originalString, String newString) {
+		Model model = Model.getInstance();
+		model.setText(model.getText().replaceAll(originalString, newString));
+	}
 }

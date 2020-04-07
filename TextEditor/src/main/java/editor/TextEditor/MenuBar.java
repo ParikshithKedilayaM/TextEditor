@@ -39,7 +39,7 @@ public class MenuBar extends JMenuBar implements ActionListener, Observer {
 	
 	private void createMenuItems() {
 		String[] fileMenuOptions = {"New", "Open", "Save"};
-		String[] editMenuOptions = {"Cut", "Copy", "Paste", "Find", "FindAll"};
+		String[] editMenuOptions = {"Cut", "Copy", "Paste", "Find", "FindAll", "Replace", "ReplaceAll"};
 		for (String option : fileMenuOptions) {
 			fileMenu.add(createMenuItem(option));
 		}
@@ -58,32 +58,58 @@ public class MenuBar extends JMenuBar implements ActionListener, Observer {
 		String eventPerformed = e.getActionCommand();
 		HighlightPainter painter = new DefaultHighlighter.DefaultHighlightPainter(
 				Model.getInstance().getTextArea().getSelectionColor());
-		if (eventPerformed.equals("Open")) {
+		switch (eventPerformed) {
+		case "Open":
 			fileManager.loadFile(chooseFile());
-		} else if (eventPerformed.equals("Save")) {
+			break;
+		case "Save":
 			String chooseFile = chooseFile();
-			if (chooseFile!=null && !chooseFile.equals(""))
+			if (chooseFile!=null && !chooseFile.equals("")) {
 				fileManager.saveAsFile(chooseFile);
-		} else if (eventPerformed.equals("New")) {
+			}
+			break;
+		case "New":
 			createNewEditorWorkspace();
-		} else if (eventPerformed.equals("Cut")) {
+			break;
+		case "Cut":
 			Model.getInstance().getTextArea().cut();
-		} else if (eventPerformed.equals("Copy")) {
+			break;
+		case "Copy":
 			Model.getInstance().getTextArea().copy();
-		} else if (eventPerformed.equals("Paste")) {
+			break;
+		case "Paste":
 			Model.getInstance().getTextArea().paste();
-		} else if (eventPerformed.equals("Find")) {
-			String showInputDialog = JOptionPane.showInputDialog(null, "Enter text to search: ");
-			findReplace.searchOne(showInputDialog, painter);
-		} else if (eventPerformed.equals("FindAll")) {
-			String showInputDialog = JOptionPane.showInputDialog(null, "Enter text to search: ");
-			findReplace.searchAll(showInputDialog, painter);
+			break;
+		case "Find":
+			String searchText = getUserInput("Enter text to search: ");
+			findReplace.searchOne(searchText, painter);
+			break;
+		case "FindAll":
+			String searchAllText = getUserInput("Enter text to search: ");
+			findReplace.searchAll(searchAllText, painter);
+			break;
+		case "Replace":
+			String replaceString = getUserInput("Enter characters to be replaced: ");
+			String replaceNewString = getUserInput("Enter new characters to be replaced with: ");
+			findReplace.replaceText(replaceString, replaceNewString);
+			break;
+		case "ReplaceAll":
+			String replaceAllString = getUserInput("Enter characters to be replaced: ");
+			String replaceAllNewString = getUserInput("Enter new characters to be replaced with: ");
+			findReplace.replaceAll(replaceAllString, replaceAllNewString);
+			break;
+			
 		}
+	}
+	
+	private String getUserInput(String message) {
+		 String userText = JOptionPane.showInputDialog(message);
+		 return userText == null ? "" : userText;
 	}
 	
 	private void createNewEditorWorkspace() {
 		String text = Model.getInstance().getText();
-		if (text == null || text.equals("")) {} else {
+		if (text != null && !text.equals("")) {
 			int showConfirmDialog = JOptionPane.showConfirmDialog(null, 
 					"Are you sure to clear current workspace? Any unsaved changes will be discarded");
 			if (showConfirmDialog == 0) {
