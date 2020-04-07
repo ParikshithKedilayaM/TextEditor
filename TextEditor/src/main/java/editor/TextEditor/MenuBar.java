@@ -109,7 +109,7 @@ public class MenuBar extends JMenuBar implements ActionListener, Observer {
 	
 	private void createNewEditorWorkspace() {
 		String text = Model.getInstance().getText();
-		if (text != null && !text.equals("")) {
+		if (text == null || text.equals("")) {} else {
 			int showConfirmDialog = JOptionPane.showConfirmDialog(null, 
 					"Are you sure to clear current workspace? Any unsaved changes will be discarded");
 			if (showConfirmDialog == 0) {
