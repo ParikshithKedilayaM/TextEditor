@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -14,14 +15,16 @@ import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 public class UserInterface extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JTabbedPane tabbedpane = null;
 	private int tabCounter = 0;
-	MenuBar menubar = null;
-
+	private MenuBar menubar = null;
+	private ArrayList<JTextArea> textAreaList;
 	public UserInterface() {
 		setExtendedState(getExtendedState() | JFrame.MAXIMIZED_BOTH);
 		setTitle(" Simple Text Editor ");
@@ -32,6 +35,7 @@ public class UserInterface extends JFrame {
 	}
 	
 	private void createComponents() {
+		textAreaList = new ArrayList<JTextArea>();
 		menubar = new MenuBar();
 		tabbedpane = new JTabbedPane();
 		setJMenuBar(menubar);
@@ -45,17 +49,24 @@ public class UserInterface extends JFrame {
 				}
 			}
 		});
+		tabbedpane.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent e) {
+				Model.getInstance().setCurrentTabName(tabbedpane.getName());
+				Model.getInstance().setTextArea(textAreaList.get(tabbedpane.getSelectedIndex()));
+			}
+		});
 	}
 	
 	private void addTextArea() {
 		JTextArea textArea = new JTextArea();
 		Model.getInstance().setTextArea(textArea);
+		textAreaList.add(textArea);
 		
 		JScrollPane scrollPane = new JScrollPane(textArea);
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 	    scrollPane.setBorder(new TitledBorder(new EtchedBorder(),"Start writing your text here!"));
-	    
+	    scrollPane.setName(""+tabCounter);
 	    String currentTabName = "New " + tabCounter++;
 	    Model.getInstance().setCurrentTabName(currentTabName);
 		tabbedpane.add(currentTabName, scrollPane);
