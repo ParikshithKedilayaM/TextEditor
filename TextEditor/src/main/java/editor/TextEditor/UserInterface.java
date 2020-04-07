@@ -22,12 +22,13 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.text.DefaultHighlighter;
+import javax.swing.text.Highlighter.HighlightPainter;
 
 public class UserInterface extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JTabbedPane tabbedpane = null;
-	private int tabCounter = 0;
 	private MenuBar menubar = null;
 	private ArrayList<JTextArea> textAreaList;
 
@@ -54,6 +55,7 @@ public class UserInterface extends JFrame {
 					addTextArea();
 				}
 			}
+
 		});
 		tabbedpane.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
@@ -66,11 +68,25 @@ public class UserInterface extends JFrame {
 				}
 			}
 		});
+
 	}
 
 	private void addTextArea() {
 		JTextArea textArea = new JTextArea();
 		Model.getInstance().setTextArea(textArea);
+		textArea.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				HighlightPainter painter = new DefaultHighlighter.DefaultHighlightPainter(
+						Model.getInstance().getTextArea().getSelectionColor());
+				if (e.getClickCount() == 2) {
+					menubar.getFindReplace().searchAll(Model.getInstance().getTextArea().getSelectedText(), painter);
+
+				} else {
+					Model.getInstance().getTextArea().getHighlighter().removeAllHighlights();
+				}
+			}
+
+		});
 		textAreaList.add(textArea);
 
 		JScrollPane scrollPane = new JScrollPane(textArea);
