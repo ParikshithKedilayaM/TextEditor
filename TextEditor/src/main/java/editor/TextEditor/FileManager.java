@@ -5,6 +5,10 @@ import java.io.PrintWriter;
 import java.util.Observable;
 import java.util.Scanner;
 
+/*
+
+
+*/
 public class FileManager extends Observable {
 	public void loadFile(String filePath) {
 		Scanner scanner = null;
