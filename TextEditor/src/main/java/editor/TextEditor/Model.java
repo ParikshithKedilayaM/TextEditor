@@ -14,6 +14,7 @@ public class Model {
 	}
 	
 	private String fileName;
+	private int latestTab = 0;
 
 	public String getFileName() {
 		return fileName;
@@ -53,6 +54,17 @@ public class Model {
 
 	public void setCurrentTabName(String currentTabName) {
 		this.currentTabName = currentTabName;
+	}
+	
+	
+	
+
+	public int getLatestTab() {
+		return latestTab;
+	}
+
+	public void setLatestTab(int latestTab) {
+		this.latestTab = latestTab;
 	}
 
 	private JTextArea textArea;

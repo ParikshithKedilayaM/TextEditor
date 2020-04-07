@@ -77,7 +77,15 @@ public class UserInterface extends JFrame {
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 		scrollPane.setBorder(new TitledBorder(new EtchedBorder(), "Start writing your text here!"));
-		String currentTabName = "New " + tabCounter++;
+
+		Model.getInstance().setLatestTab(Math.max(Model.getInstance().getLatestTab() + 1, tabbedpane.getTabCount()));
+
+		if (tabbedpane.getTabCount() == 0) {
+			Model.getInstance().setLatestTab(1);
+		}
+
+		String currentTabName = "New " + (Model.getInstance().getLatestTab());
+
 		Model.getInstance().setCurrentTabName(currentTabName);
 		tabbedpane.add(currentTabName, scrollPane);
 		tabbedpane.setSelectedIndex(tabbedpane.getTabCount() - 1);
