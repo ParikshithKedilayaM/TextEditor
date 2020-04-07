@@ -37,6 +37,10 @@ public class MenuBar extends JMenuBar implements ActionListener, Observer {
 		this.add(editMenu);
 	}
 	
+	public FindReplace getFindReplace() {
+		return findReplace;
+	}
+
 	private void createMenuItems() {
 		String[] fileMenuOptions = {"New", "Open", "Save"};
 		String[] editMenuOptions = {"Cut", "Copy", "Paste", "Find", "FindAll", "Replace", "ReplaceAll"};
