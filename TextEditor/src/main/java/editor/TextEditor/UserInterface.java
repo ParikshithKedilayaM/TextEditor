@@ -53,6 +53,7 @@ public class UserInterface extends JFrame {
 			public void stateChanged(ChangeEvent e) {
 				Model.getInstance().setCurrentTabName(tabbedpane.getName());
 				Model.getInstance().setTextArea(textAreaList.get(tabbedpane.getSelectedIndex()));
+				Model.getInstance().getTextArea().requestFocusInWindow();
 			}
 		});
 	}

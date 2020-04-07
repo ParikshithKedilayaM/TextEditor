@@ -18,7 +18,6 @@ public class FileManager extends Observable {
 			}
 			Model.getInstance().setText(text);
 			Model.getInstance().setFileName(filePath);
-			Model.getInstance().setCurrentTabName(filePath);
 		} catch (Exception i) {
 			i.printStackTrace();
 		} finally {
