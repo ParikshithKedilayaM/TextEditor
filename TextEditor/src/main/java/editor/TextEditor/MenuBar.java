@@ -38,35 +38,20 @@ public class MenuBar extends JMenuBar implements ActionListener, Observer {
 	}
 	
 	private void createMenuItems() {
-		JMenuItem newMenuItem = new JMenuItem("New"); 
-        JMenuItem openMenuItem = new JMenuItem("Open"); 
-        JMenuItem saveMenuItem = new JMenuItem("Save"); 
-        
-        JMenuItem cutMenuItem = new JMenuItem("Cut"); 
-        JMenuItem copyMenuItem = new JMenuItem("Copy"); 
-        JMenuItem pasteMenuItem = new JMenuItem("Paste"); 
-        JMenuItem findOneMenuItem = new JMenuItem("Find"); 
-        JMenuItem findAllMenuItem = new JMenuItem("FindAll"); 
-        
-        newMenuItem.addActionListener(this);
-        openMenuItem.addActionListener(this);
-        saveMenuItem.addActionListener(this);
-        
-        cutMenuItem.addActionListener(this);
-        copyMenuItem.addActionListener(this);
-        pasteMenuItem.addActionListener(this);
-        findOneMenuItem.addActionListener(this);
-        findAllMenuItem.addActionListener(this);
-        
-        fileMenu.add(newMenuItem);
-        fileMenu.add(openMenuItem);
-        fileMenu.add(saveMenuItem);
-        
-        editMenu.add(cutMenuItem);
-        editMenu.add(copyMenuItem);
-        editMenu.add(pasteMenuItem);
-        editMenu.add(findOneMenuItem);
-        editMenu.add(findAllMenuItem);
+		String[] fileMenuOptions = {"New", "Open", "Save"};
+		String[] editMenuOptions = {"Cut", "Copy", "Paste", "Find", "FindAll"};
+		for (String option : fileMenuOptions) {
+			fileMenu.add(createMenuItem(option));
+		}
+		for (String option : editMenuOptions) {
+			editMenu.add(createMenuItem(option));
+		}
+	}
+	
+	private JMenuItem createMenuItem(String option) {
+		JMenuItem newMenuItem = new JMenuItem(option);
+		newMenuItem.addActionListener(this);
+		return newMenuItem;
 	}
 
 	public void actionPerformed(ActionEvent e) {
