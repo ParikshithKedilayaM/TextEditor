@@ -16,14 +16,21 @@ public class MenuBar extends JMenuBar implements ActionListener, Observer {
 	private static final long serialVersionUID = 1L;
 	private FileManager fileManager;
 	private JMenu fileMenu = null;
+	private JMenu editMenu = null;
 	
 	public MenuBar() {
 		this.fileManager = new FileManager();
 		this.fileManager.addObserver(this);
+		createMenu();
+		setVisible(true);
+	}
+	
+	private void createMenu() {
 		fileMenu = new JMenu("File");
+		editMenu = new JMenu("Edit");
 		createMenuItems();
 		this.add(fileMenu);
-		setVisible(true);
+		this.add(editMenu);
 	}
 	
 	private void createMenuItems() {
@@ -31,13 +38,25 @@ public class MenuBar extends JMenuBar implements ActionListener, Observer {
         JMenuItem openMenuItem = new JMenuItem("Open"); 
         JMenuItem saveMenuItem = new JMenuItem("Save"); 
         
+        JMenuItem cutMenuItem = new JMenuItem("Cut"); 
+        JMenuItem copyMenuItem = new JMenuItem("Copy"); 
+        JMenuItem pasteMenuItem = new JMenuItem("Paste"); 
+        
         newMenuItem.addActionListener(this);
         openMenuItem.addActionListener(this);
         saveMenuItem.addActionListener(this);
         
+        cutMenuItem.addActionListener(this);
+        copyMenuItem.addActionListener(this);
+        pasteMenuItem.addActionListener(this);
+        
         fileMenu.add(newMenuItem);
         fileMenu.add(openMenuItem);
         fileMenu.add(saveMenuItem);
+        
+        editMenu.add(cutMenuItem);
+        editMenu.add(copyMenuItem);
+        editMenu.add(pasteMenuItem);
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -50,6 +69,12 @@ public class MenuBar extends JMenuBar implements ActionListener, Observer {
 				fileManager.saveAsFile(chooseFile);
 		} else if (eventPerformed.equals("New")) {
 			createNewEditorWorkspace();
+		} else if (eventPerformed.equals("Cut")) {
+			Model.getInstance().getTextArea().cut();
+		} else if (eventPerformed.equals("Copy")) {
+			Model.getInstance().getTextArea().copy();
+		} else if (eventPerformed.equals("Paste")) {
+			Model.getInstance().getTextArea().paste();
 		}
 	}
 	
@@ -57,7 +82,7 @@ public class MenuBar extends JMenuBar implements ActionListener, Observer {
 		String text = Model.getInstance().getText();
 		if (text == null || text.equals("")) {} else {
 			int showConfirmDialog = JOptionPane.showConfirmDialog(null, 
-					"Are you sure to clear a new workspace? Any unsaved changes will be discarded");
+					"Are you sure to clear current workspace? Any unsaved changes will be discarded");
 			if (showConfirmDialog == 0) {
 				Model.getInstance().setText("");
 			}
