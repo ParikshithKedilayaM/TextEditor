@@ -82,8 +82,10 @@ public class UserInterface extends JFrame implements Observer {
 				HighlightPainter painter = new DefaultHighlighter.DefaultHighlightPainter(
 						Model.getInstance().getTextArea().getSelectionColor());
 				if (e.getClickCount() == 2) {
-					menubar.getFindReplace().searchAll(Model.getInstance().getTextArea().getSelectedText(), painter);
-
+					String selectedText = Model.getInstance().getTextArea().getSelectedText();
+					if (selectedText != null) {
+						menubar.getFindReplace().searchAll(selectedText, painter);
+					}
 				} else {
 					Model.getInstance().getTextArea().getHighlighter().removeAllHighlights();
 				}
