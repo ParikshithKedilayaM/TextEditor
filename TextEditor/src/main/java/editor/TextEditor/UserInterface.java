@@ -1,6 +1,7 @@
 package editor.TextEditor;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -80,7 +81,7 @@ public class UserInterface extends JFrame implements Observer {
 		textArea.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				HighlightPainter painter = new DefaultHighlighter.DefaultHighlightPainter(
-						Model.getInstance().getTextArea().getSelectionColor());
+						Color.YELLOW);
 				if (e.getClickCount() == 2) {
 					String selectedText = Model.getInstance().getTextArea().getSelectedText();
 					if (selectedText != null) {
