@@ -55,9 +55,6 @@ public class Model {
 	public void setCurrentTabName(String currentTabName) {
 		this.currentTabName = currentTabName;
 	}
-	
-	
-	
 
 	public int getLatestTab() {
 		return latestTab;

@@ -34,6 +34,7 @@ public class UserInterface extends JFrame implements Observer {
 	private static final long serialVersionUID = 1L;
 	private JTabbedPane tabbedPane = null;
 	private MenuBar menubar = null;
+//	private KeyHandler keyHandler = null;
 	private ArrayList<JTextArea> textAreaList;
 
 	public UserInterface() {
@@ -48,6 +49,7 @@ public class UserInterface extends JFrame implements Observer {
 	private void createComponents() {
 		textAreaList = new ArrayList<JTextArea>();
 		menubar = new MenuBar(this);
+//		keyHandler = new KeyHandler(menubar);
 		tabbedPane = new JTabbedPane();
 		setJMenuBar(menubar);
 		add(tabbedPane);
@@ -85,14 +87,14 @@ public class UserInterface extends JFrame implements Observer {
 				if (e.getClickCount() == 2) {
 					String selectedText = Model.getInstance().getTextArea().getSelectedText();
 					if (selectedText != null) {
-						menubar.getFindReplace().searchAll(selectedText, painter);
+						menubar.searchAll(selectedText, painter);
 					}
 				} else {
 					Model.getInstance().getTextArea().getHighlighter().removeAllHighlights();
 				}
 			}
-
 		});
+//		textArea.addKeyListener(keyHandler);
 		textAreaList.add(textArea);
 
 		JScrollPane scrollPane = new JScrollPane(textArea);

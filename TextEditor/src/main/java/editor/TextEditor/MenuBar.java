@@ -11,6 +11,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.text.DefaultHighlighter;
+import javax.swing.text.DefaultHighlighter.DefaultHighlightPainter;
 import javax.swing.text.Highlighter.HighlightPainter;
 
 public class MenuBar extends JMenuBar implements ActionListener, Observer {
@@ -38,10 +39,6 @@ public class MenuBar extends JMenuBar implements ActionListener, Observer {
 		this.add(editMenu);
 	}
 
-	public FindReplace getFindReplace() {
-		return findReplace;
-	}
-
 	private void createMenuItems() {
 		String[] fileMenuOptions = { "New", "Open", "Save" };
 		String[] editMenuOptions = { "Cut", "Copy", "Paste", "Find", "FindAll", "Replace", "ReplaceAll" };
@@ -61,49 +58,104 @@ public class MenuBar extends JMenuBar implements ActionListener, Observer {
 
 	public void actionPerformed(ActionEvent e) {
 		String eventPerformed = e.getActionCommand();
-		HighlightPainter painter = new DefaultHighlighter.DefaultHighlightPainter(
-				Model.getInstance().getTextArea().getSelectionColor());
 		switch (eventPerformed) {
 		case "Open":
-			fileManager.loadFile(chooseFile());
+			openFile();
 			break;
 		case "Save":
-			String chooseFile = chooseFile();
-			if (chooseFile != null && !chooseFile.equals("")) {
-				fileManager.saveAsFile(chooseFile);
-			}
+			saveAsFile();
 			break;
 		case "New":
 			createNewEditorWorkspace();
 			break;
 		case "Cut":
-			Model.getInstance().getTextArea().cut();
+			cutOperation();
 			break;
 		case "Copy":
-			Model.getInstance().getTextArea().copy();
+			copyOperation();
 			break;
 		case "Paste":
-			Model.getInstance().getTextArea().paste();
+			pasteOperation();
 			break;
 		case "Find":
-			String searchText = getUserInput("Enter text to search: ");
-			findReplace.searchOne(searchText, painter);
+			find();
 			break;
 		case "FindAll":
-			String searchAllText = getUserInput("Enter text to search: ");
-			findReplace.searchAll(searchAllText, painter);
+			findAll();
 			break;
 		case "Replace":
-			String replaceString = getUserInput("Enter characters to be replaced: ");
-			String replaceNewString = getUserInput("Enter new characters to be replaced with: ");
-			findReplace.replaceText(replaceString, replaceNewString);
+			replace();
 			break;
 		case "ReplaceAll":
-			String replaceAllString = getUserInput("Enter characters to be replaced: ");
-			String replaceAllNewString = getUserInput("Enter new characters to be replaced with: ");
-			findReplace.replaceAll(replaceAllString, replaceAllNewString);
+			replaceAll();
 			break;
 
+		}
+	}
+	
+	public void saveAsFile() {
+		String chooseFile = chooseFile();
+		if (chooseFile != null && !chooseFile.equals("")) {
+			fileManager.saveAsFile(chooseFile);
+		}
+	}
+	
+	public void openFile() {
+		fileManager.loadFile(chooseFile());
+	}
+	
+	public void cutOperation() {
+		Model.getInstance().getTextArea().cut();
+	}
+	
+	public void copyOperation() {
+		Model.getInstance().getTextArea().copy();
+	}
+	
+	public void pasteOperation() {
+		Model.getInstance().getTextArea().paste();
+	}
+	
+	private DefaultHighlightPainter getPainter() {
+		return new DefaultHighlighter.DefaultHighlightPainter(
+				Model.getInstance().getTextArea().getSelectionColor());
+	}
+	
+	public void find() {
+		String userInput = getUserInput("Enter characters to Search");
+		search(userInput, getPainter());
+	}
+	
+	public void findAll() {
+		String userInput = getUserInput("Enter characters to Search");
+		searchAll(userInput, getPainter());
+	}
+	
+	public void search(String searchText, HighlightPainter painter) {
+		findReplace.searchOne(searchText, painter);
+	}
+	
+	public void searchAll(String searchText, HighlightPainter painter) {
+		findReplace.searchOne(searchText, painter);
+	}
+	
+	public void replace() {
+		String replaceString = getUserInput("Enter characters to be replaced: ");
+		if (!replaceString.equals("")) {
+			String replaceNewString = getUserInput("Enter new characters to be replaced with: ");
+			if (!replaceNewString.equals("")) {
+				findReplace.replaceText(replaceString, replaceNewString);
+			}
+		}
+	}
+	
+	public void replaceAll() {
+		String replaceAllString = getUserInput("Enter characters to be replaced: ");
+		if (!replaceAllString.equals("")) {
+			String replaceAllNewString = getUserInput("Enter new characters to be replaced with: ");
+			if (!replaceAllNewString.equals("")) {
+				findReplace.replaceAll(replaceAllString, replaceAllNewString);
+			}
 		}
 	}
 
