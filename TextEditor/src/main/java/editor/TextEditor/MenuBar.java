@@ -136,7 +136,7 @@ public class MenuBar extends JMenuBar implements ActionListener, Observer {
 	}
 	
 	public void searchAll(String searchText, HighlightPainter painter) {
-		findReplace.searchOne(searchText, painter);
+		findReplace.searchAll(searchText, painter);
 	}
 	
 	public void replace() {
