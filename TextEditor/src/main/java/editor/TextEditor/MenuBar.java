@@ -164,7 +164,7 @@ public class MenuBar extends JMenuBar implements ActionListener, Observer {
 		return userText == null ? "" : userText;
 	}
 
-	private void createNewEditorWorkspace() {
+	public void createNewEditorWorkspace() {
 		String text = Model.getInstance().getText();
 		if (text == null || text.equals("")) {
 		} else {
