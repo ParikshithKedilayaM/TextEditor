@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
+import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -21,13 +22,19 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
+import javax.swing.KeyStroke;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Highlighter.HighlightPainter;
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
+import javax.swing.undo.UndoManager;
 
 public class UserInterface extends JFrame implements Observer {
 
@@ -36,6 +43,7 @@ public class UserInterface extends JFrame implements Observer {
 	private MenuBar menubar = null;
 	private KeyHandler keyHandler = null;
 	private ArrayList<JTextArea> textAreaList;
+	UndoManager undoManager = null;
 
 	public UserInterface() {
 		setExtendedState(getExtendedState() | JFrame.MAXIMIZED_BOTH);
@@ -51,6 +59,7 @@ public class UserInterface extends JFrame implements Observer {
 		menubar = new MenuBar(this);
 		keyHandler = new KeyHandler(menubar);
 		tabbedPane = new JTabbedPane();
+		undoManager = new UndoManager();
 		setJMenuBar(menubar);
 		add(tabbedPane);
 		addTextArea();
@@ -78,25 +87,8 @@ public class UserInterface extends JFrame implements Observer {
 	}
 
 	private void addTextArea() {
-		JTextArea textArea = new JTextArea();
-		Model.getInstance().setTextArea(textArea);
-		textArea.addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent e) {
-				HighlightPainter painter = new DefaultHighlighter.DefaultHighlightPainter(
-						Color.YELLOW);
-				if (e.getClickCount() == 2) {
-					String selectedText = Model.getInstance().getTextArea().getSelectedText();
-					if (selectedText != null) {
-						menubar.searchAll(selectedText, painter);
-					}
-				} else {
-					Model.getInstance().getTextArea().getHighlighter().removeAllHighlights();
-				}
-			}
-		});
-		textArea.addKeyListener(keyHandler);
-		textAreaList.add(textArea);
-
+		JTextArea textArea = createTextArea();
+		
 		JScrollPane scrollPane = new JScrollPane(textArea);
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -115,6 +107,62 @@ public class UserInterface extends JFrame implements Observer {
 		tabbedPane.setSelectedIndex(tabbedPane.getTabCount() - 1);
 		tabbedPane.setTabComponentAt(tabbedPane.indexOfComponent(scrollPane),
 				getTitlePanel(tabbedPane, scrollPane, currentTabName));
+	}
+	
+	private JTextArea createTextArea() {
+		JTextArea textArea = new JTextArea();
+		Model.getInstance().setTextArea(textArea);
+		textArea.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				HighlightPainter painter = new DefaultHighlighter.DefaultHighlightPainter(
+						Color.YELLOW);
+				if (e.getClickCount() == 2) {
+					String selectedText = Model.getInstance().getTextArea().getSelectedText();
+					if (selectedText != null) {
+						menubar.searchAll(selectedText, painter);
+					}
+				} else {
+					Model.getInstance().getTextArea().getHighlighter().removeAllHighlights();
+				}
+			}
+		});
+		textArea.addKeyListener(keyHandler);
+		textAreaList.add(textArea);
+		
+		textArea.getDocument().addUndoableEditListener(new UndoableEditListener() {
+			@Override
+			public void undoableEditHappened(UndoableEditEvent e) {
+				undoManager.addEdit(e.getEdit());
+			}	
+		});
+		
+		textArea.getActionMap().put("Undo", new AbstractAction("Undo") {
+			private static final long serialVersionUID = 1L;
+			public void actionPerformed(ActionEvent evt) {
+	            try {
+	                if (undoManager.canUndo()) {
+	                	undoManager.undo();
+	                }
+	            } catch (CannotUndoException e) {
+	            }
+	        }
+	    });
+		textArea.getInputMap().put(KeyStroke.getKeyStroke("control Z"), "Undo");
+		
+		textArea.getActionMap().put("Redo", new AbstractAction("Redo") {
+			private static final long serialVersionUID = 1L;
+			public void actionPerformed(ActionEvent evt) {
+	            try {
+	                if (undoManager.canRedo()) {
+	                	undoManager.redo();
+	                }
+	            } catch (CannotRedoException e) {
+	            }
+	        }
+	    });
+		textArea.getInputMap().put(KeyStroke.getKeyStroke("control Y"), "Redo");
+		
+		return textArea;
 	}
 
 	private void addNewTabButton() {
