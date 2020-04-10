@@ -89,11 +89,15 @@ public class UserInterface extends JFrame implements Observer {
 	private void addTextArea() {
 		JTextArea textArea = createTextArea();
 		
+		
 		JScrollPane scrollPane = new JScrollPane(textArea);
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 		scrollPane.setBorder(new TitledBorder(new EtchedBorder(), "Start writing your text here!"));
 
+		TextLineNumber tln = new TextLineNumber(textArea);
+		scrollPane.setRowHeaderView( tln );
+		
 		Model.getInstance().setLatestTab(Math.max(Model.getInstance().getLatestTab() + 1, tabbedPane.getTabCount()));
 
 		if (tabbedPane.getTabCount() == 0) {
